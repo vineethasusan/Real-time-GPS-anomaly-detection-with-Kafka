@@ -1,0 +1,15 @@
+[project]
+name = "fleet-gps-streaming"
+version = "1.0.0"
+description = "Real-time GPS anomaly detection for fleets with Kafka, event-time processing and a live dashboard"
+authors = [{ name = "Vineetha Susan Alexander" }]
+requires-python = ">=3.10"
+license = { text = "MIT" }
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
+
+[tool.ruff]
+line-length = 120
+target-version = "py310"

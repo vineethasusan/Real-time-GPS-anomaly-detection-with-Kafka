@@ -1,0 +1,4 @@
+pandas>=2.1
+confluent-kafka>=2.4
+streamlit>=1.38
+pydeck>=0.9

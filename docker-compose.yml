@@ -1,0 +1,50 @@
+# Redpanda = Kafka-compatible broker (single binary, no ZooKeeper). Swap for Kafka / Confluent / Event Hubs freely.
+services:
+  redpanda:
+    image: redpandadata/redpanda:v24.2.7
+    command:
+      - redpanda start --smp 1 --overprovisioned --node-id 0 --check=false
+      - --kafka-addr internal://0.0.0.0:9092,external://0.0.0.0:19092
+      - --advertise-kafka-addr internal://redpanda:9092,external://localhost:19092
+    ports: ["19092:19092"]
+    healthcheck:
+      test: ["CMD-SHELL", "rpk cluster health | grep -E 'Healthy:.+true' || exit 1"]
+      interval: 5s
+      retries: 20
+
+  console:
+    image: redpandadata/console:v2.7.2
+    environment:
+      KAFKA_BROKERS: redpanda:9092
+    ports: ["8080:8080"]
+    depends_on: { redpanda: { condition: service_healthy } }
+
+  detector:
+    build: .
+    command: python -m fleetstream.service
+    environment:
+      KAFKA_BOOTSTRAP: redpanda:9092
+      STORE_PATH: /app/data/stream.db
+    volumes: ["streamdata:/app/data"]
+    depends_on: { redpanda: { condition: service_healthy } }
+    restart: unless-stopped
+
+  producer:
+    build: .
+    command: python -m fleetstream.producer --vehicles 80 --speedup 30 --noise --truth /app/data/ground_truth.jsonl
+    environment:
+      KAFKA_BOOTSTRAP: redpanda:9092
+    volumes: ["streamdata:/app/data"]
+    depends_on: { redpanda: { condition: service_healthy } }
+
+  dashboard:
+    build: .
+    command: streamlit run dashboard.py --server.port 8501 --server.address 0.0.0.0
+    environment:
+      STORE_PATH: /app/data/stream.db
+    volumes: ["streamdata:/app/data"]
+    ports: ["8501:8501"]
+    depends_on: [detector]
+
+volumes:
+  streamdata:
