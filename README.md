@@ -74,8 +74,8 @@ flowchart LR
 **Option 1: no Kafka, just Python** (fastest way to see it working)
 
 ```bash
-git clone https://github.com/vineethasusan/fleet-gps-streaming.git
-cd fleet-gps-streaming
+git clone https://github.com/vineethasusan/Real-time-GPS-anomaly-detection-with-Kafka.git
+cd Real-time-GPS-anomaly-detection-with-Kafka
 python -m venv .venv && source .venv/bin/activate
 make install
 make eval     # runs 8 simulated hours and prints recall/precision per alert type
@@ -94,7 +94,7 @@ make up       # Redpanda + producer + detector + dashboard
 ## Project structure
 
 ```
-fleet-gps-streaming/
+Real-time-GPS-anomaly-detection-with-Kafka/
 ├── src/fleetstream/
 │   ├── simulator.py   # fleet simulator with labelled anomaly injection + network noise
 │   ├── detector.py    # stateful event-time detector (all rules and streaming logic)
